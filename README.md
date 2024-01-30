@@ -1,122 +1,162 @@
 yum install nginx
-firewall-cmd --permanent --add-service=http
-firewall-cmd --reload
-setenforce 0 (for disabled selinux)
-yum -y install mariadb mariadb-server
+yum install mariadb
+systemctl start php-fpm
 systemctl start mariadb
-systemctl enable mariadb
-yum install -y https://rpms.remirepo.net/enterprise/remi-release-7.rpm
-yum install -y --enablerepo=remi-php73 php php-fpm php-mysqlnd php-cli
-vi /etc/php-fpm.d/www.conf
-listen = 127.0.0.1:9000
-vi /etc/nginx/conf.d/virtual.conf
-server {
-        server_name nazil.com;
-        root /usr/share/nginx/html/nazil.local;
-    location / {
-        index index.html index.htm index.php;
-    }
-     location ~ \.php$ {
-        include /etc/nginx/fastcgi_params;
-        fastcgi_pass 127.0.0.1:9000;
-        fastcgi_index index.php;
-        fastcgi_param SCRIPT_FILENAME /usr/share/nginx/html/nazil.local$fastcgi_script_name;
-   }
-}
-vi /etc/hosts
-192.168.96.65 nazil.com
-mkdir /usr/share/nginx/html/nazil.local
-echo "<?php phpinfo(); ?>" > /usr/share/nginx/html/itzgeek.local/index.php
-systemctl restart nginx
-systemctl restart php-fpm
-systemctl enable php-fpm
+systemctl start nginx
+systemctl enable php-fpm nginx mariadb
+vim /etc/nginx/conf.d/default.conf
 
-(to install php myadmin)
+Categories
+How to install Wordpress using Nginx
 
-yum install --enablerepo=remi-php73 phpmyadmin
-vi /etc/nginx/conf.d/phpMyAdmin.conf
-server {
-        listen   80;
-        server_name phpmyadmin.nazil.local;
-        root /usr/share/phpMyAdmin;
-    location / {
-        index  index.php;
-    }
-## Images and static content is treated different
-        location ~* ^.+.(jpg|jpeg|gif|css|png|js|ico|xml)$ {
-        access_log        off;
-        expires           30d;
-    }
-    location ~ /\.ht {
-        deny  all;
-    }
-    location ~ /(libraries|setup/frames|setup/libs) {
-        deny all;
-        return 404;
-    }
-    location ~ \.php$ {
-        include /etc/nginx/fastcgi_params;
-        fastcgi_pass 127.0.0.1:9000;
-        fastcgi_index index.php;
-        fastcgi_param SCRIPT_FILENAME /usr/share/phpMyAdmin$fastcgi_script_name;
-    }
-}
-systemctl restart nginx
-systemctl restart php-fpm
-firewall-cmd --permanent --add-service=http
-firewall-cmd --reload
+To Install WordPress using Nginx Web Server
+In this article we will learn how to install WordPress using Nginx in CentOS. Nginx is compiled as a package in repositories and can be installed with apt-get Package Utility which supports Virtual Hosts like Apache and PHP files.
 
-(to install wordpress)
+To Install Nginx Web Server
+Ezoic
 
-vi /etc/nginx/conf.d/wordpress.conf
-server {
-        listen 80;
-        server_name wordpress.itzgeek.local;
+For Redhat Based
+Run the following command to download the rpm package of nginx and then install it.
 
-        access_log /usr/share/nginx/wordpress.itzgeek.local/logs/access.log;
-        error_log /usr/share/nginx/wordpress.itzgeek.local/logs/error.log;
+[root@linuxhelp~]#  wget http://nginx.org/packages/centos/7/noarch/RPMS/nginx-release-centos-7-0.el7.ngx.noarch.rpm
+--2016-07-30 15:12:05--  http://nginx.org/packages/centos/7/noarch/RPMS/nginx-release-centos-7-0.el7.ngx.noarch.rpm
+Resolving nginx.org (nginx.org)... 95.211.80.227, 206.251.255.63, 2001:1af8:4060:a004:21::e3
+Connecting to nginx.org (nginx.org)|95.211.80.227|:80... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 4680 (4.6K) [application/x-redhat-package-manager]
+Saving to: ‘ nginx-release-centos-7-0.el7.ngx.noarch.rpm’ 
 
+100%[=============================================================> ] 4,680       --.-K/s   in 0.004s  
+
+2016-07-30 15:12:07 (1.16 MB/s) - ‘ nginx-release-centos-7-0.el7.ngx.noarch.rpm’  saved [4680/4680]
+Run the following command to add the rpm packages.
+
+[root@linuxhelp~]# rpm -Uvh nginx-release-centos-7-0.el7.ngx.noarch.rpm
+Preparing...                          ################################# [100%]
+Updating / installing...
+   1:nginx-release-centos-7-0.el7.ngx ################################# [100%]
+Now install the Nginx packages.
+
+Ezoic
+[root@linuxhelp~]# yum install nginx
+Loaded plugins: fastestmirror, langpacks
+Loading mirror speeds from cached hostfile
+ * base: mirror.dhakacom.com
+ * extras: centos-hcm.viettelidc.com.vn
+ * updates: centos-hcm.viettelidc.com.vn
+updates/7/x86_64/primary_db                                                     | 5.7 MB  00:00:07     
+Resolving Dependencies
+-->  Running transaction check
+--->  Package nginx.x86_64 1:1.10.1-1.el7.ngx will be installed
+.
+.
+.
+ Installing : 1:nginx-1.10.1-1.el7.ngx.x86_64                                                     1/1 
+Thanks for using nginx!
+Please find the official documentation for nginx here:
+* http://nginx.org/en/docs/
+Commercial subscriptions for nginx are available on:
+* http://nginx.com/products/
+----------------------------------------------------------------------
+  Verifying  : 1:nginx-1.10.1-1.el7.ngx.x86_64                                                     1/1 
+
+Installed:
+  nginx.x86_64 1:1.10.1-1.el7.ngx                                                                      
+Complete!
+Ezoic
+
+For Ubuntu based
+Run the following command to install Nginx in Ubuntu.
+
+root@linuxhelp~$ sudo apt-get install nginx
+To install database
+Run the following command to install the necessary packages for WordPress.
+For Redhat based
+
+[root@linuxhelp~]# yum install php-fpm php-mysql mariadb-server
+Loaded plugins: fastestmirror, langpacks
+Loading mirror speeds from cached hostfile
+ * base: mirror.dhakacom.com
+ * extras: centos-hcm.viettelidc.com.vn
+ * updates: centos-hcm.viettelidc.com.vn
+Resolving Dependencies
+-->  Running transaction check
+--->  Package mariadb-server.x86_64 1:5.5.35-3.el7 will be updated
+--->  Package mariadb-server.x86_64 1:5.5.47-1.el7_2 will be an update
+--->  Package php-pdo.x86_64 0:5.4.16-36.1.el7_2.1 will be installed
+-->  Running transaction check
+--->  Package libzip.x86_64 0:0.10.1-8.el7 will be installed
+.
+.
+.
+Installed:
+  php-fpm.x86_64 0:5.4.16-36.1.el7_2.1              php-mysql.x86_64 0:5.4.16-36.1.el7_2.1             
+
+Updated:
+  mariadb-server.x86_64 1:5.5.47-1.el7_2                                                               
+Complete!
+For Ubuntu based
+Utilise the following command to install the php5 packages in Ubuntu.
+
+Ezoic
+root@linuxhelp~$ apt-get install php5 php5-fpm mysql-server php5-mysql
+To configure WordPress
+Open the config file and add the following contents in location category.
+
+[root@linuxhelp~]# vim /etc/nginx/conf.d/default.conf
 location / {
-        root /usr/share/nginx/wordpress.itzgeek.local;
-        index index.php index.html index.htm;
-
-if (-f $request_filename) {
-        expires 30d;
-        break;
-}
-
-if (!-e $request_filename) {
-        rewrite ^(.+)$ /index.php?q=$1 last;
+        try_files $uri $uri/ /index.php$is_args$args 
         }
-}
+The final config file appear as follows.
 
-location ~ .php$ {
-        fastcgi_pass   localhost:9000;  # port where FastCGI processes were spawned
-        fastcgi_index  index.php;
-        fastcgi_param  SCRIPT_FILENAME   /usr/share/nginx/wordpress.itzgeek.local$fastcgi_script_name;  # same path as above
-        fastcgi_param PATH_INFO               $fastcgi_script_name;
-        include /etc/nginx/fastcgi_params;
-        }
+server {
+    listen       80 
+    server_name  localhost 
+        root   /usr/share/nginx/html 
+        index  index.html index.htm index.php 
+location / {
+try_files $uri $uri/ /index.php$is_args$args 
 }
-
-mkdir /usr/share/nginx/wordpress.itzgeek.local
-mkdir /usr/share/nginx/wordpress.itzgeek.local/logs
-nginx -t
+    error_page   500 502 503 504  /50x.html 
+    location = /50x.html {
+        root   /usr/share/nginx/html 
+    }
+   location ~ .php$ {
+        fastcgi_pass   127.0.0.1:9000 
+        fastcgi_index  index.php 
+        fastcgi_param  SCRIPT_FILENAME  $request_filename 
+        include        fastcgi_params 
+    }
+}
+(make these changes)
+vim /etc/php-fpm.d/www.conf
+user = nginx
+.
+group = nginx
+(make these changes)
+cd /usr/share/nginx/html
+rm -rf * ( clear all in the html directory)
+wget http://wordpress.org/latest.zip
+unzip latest.zip
+cd wordpress
+mv * ../
+cp wp-config-sample.php wp-config.php
+vim wp-config.php
+define(' DB_NAME' , ' wordpress' ) 
+define(' DB_USER' , ' wordpressuser' ) 
+define(' DB_PASSWORD' , ' root' ) 
+define(' DB_HOST' , ' localhost' ) 
+define(' DB_CHARSET' , ' utf8' ) 
+define(' DB_COLLATE' , ' ' )
 systemctl restart nginx
 systemctl restart php-fpm
-setenforce 0
+systemctl restart mariadb
 
-(create database for wordpress)
-mysql -u root -p
-CREATE DATABASE wordpress;
-CREATE USER 'wpuser'@'localhost' IDENTIFIED BY 'wppassword';
-GRANT ALL PRIVILEGES ON wordpress.* TO 'wpuser'@'localhost';
-exit;
-wget http://wordpress.org/latest.tar.gz
-tar -zxvf latest.tar.gz
-mv wordpress/* /usr/share/nginx/wordpress.itzgeek.local
-cp /usr/share/nginx/wordpress.itzgeek.local/wp-config-sample.php /usr/share/nginx/wordpress.itzgeek.local/wp-config.php
-vi /usr/share/nginx/wordpress.itzgeek.local/wp-config.php
 
-(set wordpress password and username database that we have set on mariadb)
-chown -R nginx:nginx /usr/share/nginx/wordpress.itzgeek.local/
+ http:/ip adress ( to run the wordpress on website)
+
+![nazil wordpress-1](https://github.com/Muhammednaziln/Muhammednaziln/assets/156998948/43bb3a09-ec0d-47a8-97b2-82e456dabe3a)
+
+
+
+
