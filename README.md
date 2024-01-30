@@ -56,7 +56,8 @@ systemctl restart mariadb
 
  http:/ip adress ( to run the wordpress on website)
 
-![nazil wordpress-1](https://github.com/Muhammednaziln/Muhammednaziln/assets/156998948/43bb3a09-ec0d-47a8-97b2-82e456dabe3a)
+![nazil wordpress org-1](https://github.com/Muhammednaziln/Muhammednaziln/assets/156998948/0a08a01d-b2be-40d2-9460-da3333d145c0)
+
 
 
 
