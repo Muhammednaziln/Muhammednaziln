@@ -38,6 +38,9 @@ wget http://wordpress.org/latest.zip
 unzip latest.zip
 cd wordpress
 mv * ../
+cd ..
+rm -rf latest.zip wordpress/
+pwd (check the path of the file and and ensure that it is the correct path in the configuration file
 cp wp-config-sample.php wp-config.php
 vim wp-config.php
 define(' DB_NAME' , ' wordpress' ) 
